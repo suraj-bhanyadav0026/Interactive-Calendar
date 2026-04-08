@@ -1,0 +1,184 @@
+/* === FILE: WallCalendar.module.css === */
+:root {
+  --paper: #faf8f3;
+  --ink: #1a1a1a;
+  --ink-light: #6b6b6b;
+  --accent: #2563eb;
+  --accent-warm: #e85d26;
+  --range-fill: rgba(37, 99, 235, 0.1);
+  --range-start: #2563eb;
+  --range-end: #2563eb;
+  --today-ring: #e85d26;
+  --shadow: rgba(0, 0, 0, 0.18);
+}
+.wallCalendar {
+  max-width: 780px;
+  margin: 40px auto;
+  border-radius: 4px 4px 8px 8px;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 2px 4px rgba(0,0,0,.08), 0 8px 16px rgba(0,0,0,.12), 0 24px 48px rgba(0,0,0,.16);
+  overflow: hidden;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  transition: background 300ms ease, color 300ms ease;
+  perspective: 1200px;
+}
+.themeDark { --paper: #1a1a2a; --ink: #e8e6e0; --ink-light: #a7a4b3; --accent: #60a5fa; --range-fill: rgba(96,165,250,.18); }
+.themeSepia { --paper: #f5edd6; --ink: #3d2b1f; --ink-light: #7a624f; --accent: #a0522d; --range-fill: rgba(160,82,45,.15); --today-ring: #a0522d; }
+
+.themeCyber {
+  --paper: #0a192f;
+  --ink: #ccd6f6;
+  --ink-light: #8892b0;
+  --accent: #00f5ff;
+  --accent-warm: #ff00aa;
+  --range-fill: rgba(0, 245, 255, 0.15);
+  --range-start: #00f5ff;
+  --range-end: #00f5ff;
+  --today-ring: #ff00aa;
+  --shadow: rgba(0, 245, 255, 0.3);
+  background: linear-gradient(135deg, rgba(10,25,47,0.95) 0%, rgba(26,43,80,0.95) 100%);
+}
+
+.themeCyber .wallCalendar {
+  box-shadow: 
+    0 0 20px rgba(0, 245, 255, 0.3),
+    0 0 40px rgba(0, 245, 255, 0.1),
+    inset 0 0 20px rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 245, 255, 0.2);
+}
+
+.themeCyber .topBar, .themeCyber .notesTextarea, .themeCyber .dayButton:hover {
+  background: rgba(0, 245, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.themeCyber .dateCircle.isStart, .themeCyber .dateCircle.isEnd,
+.themeCyber .saveBtn, .themeCyber .navBtn, .themeCyber .todayBtn {
+  box-shadow: 0 0 15px rgba(0, 245, 255, 0.5);
+  text-shadow: 0 0 10px currentColor;
+}
+
+.themeCyber .calendarBody::after {
+  background: repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0, 245, 255, 0.05) 2px, rgba(0, 245, 255, 0.05) 4px);
+}
+
+.topBar { display:flex; justify-content:space-between; align-items:center; padding: 8px 14px 6px; background: color-mix(in oklab, var(--paper), white 10%); }
+.themeSwitcher { display:flex; gap:8px; }
+.swatch { width:16px; height:16px; border-radius:50%; border:2px solid rgba(0,0,0,.3); cursor:pointer; }
+.swatch:focus-visible, .navBtn:focus-visible, .todayBtn:focus-visible, .dayButton:focus-visible, .notesToggle:focus-visible, .copyBtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.heroWrap { position:relative; height:260px; overflow:hidden; transform-style: preserve-3d; }
+.heroImage, .heroImageNext {
+  position:absolute; inset:0; background-size:cover; background-position:center; transition:opacity 400ms ease;
+}
+.heroImage::after, .heroImageNext::after { content:""; position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,.1)); }
+.themeDark .heroImage::after, .themeDark .heroImageNext::after { background:linear-gradient(to top, rgba(0,0,0,.75), rgba(0,0,0,.4)); }
+.heroMeta { position:absolute; right:20px; bottom:18px; color:#fff; z-index:2; text-align:right; }
+.heroYear { letter-spacing:.2em; font-size:.85rem; opacity:.85; }
+.heroMonth { font-family: "Cormorant Garamond", Georgia, serif; font-weight:600; letter-spacing:.06em; font-size: clamp(2.4rem, 6vw, 4rem); line-height: .95; }
+.heroCorner { position:absolute; left:0; bottom:0; width:150px; height:80px; background:var(--accent); clip-path: polygon(0 0, 100% 100%, 0 100%); z-index:2; }
+
+.calendarBody { position:relative; display:grid; grid-template-columns: 31% 69%; background: var(--paper); }
+.calendarBody::after {
+  content:""; position:absolute; inset:0; pointer-events:none; opacity:.35;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.015) 2px, rgba(0,0,0,.015) 4px);
+}
+.notesCol, .gridCol { position:relative; z-index:1; }
+.notesCol { border-right:1px solid rgba(0,0,0,.08); }
+.gridCol { padding: 14px; }
+
+.header { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:8px; }
+.headerTitle { font-family: "Cormorant Garamond", Georgia, serif; font-size: clamp(1.3rem, 2.6vw, 2rem); letter-spacing:.04em; }
+.navGroup { display:flex; align-items:center; gap:8px; }
+.navBtn, .todayBtn {
+  min-width:44px; min-height:44px; border:none; border-radius:10px; cursor:pointer; background: color-mix(in oklab, var(--paper), var(--ink) 6%); color:var(--ink);
+}
+
+.miniPreviewWrap { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:8px 0 10px; opacity:.65; transform: scale(.96); }
+.miniMonth { font-size:.62rem; display:grid; grid-template-columns: repeat(7, 1fr); gap:2px; }
+.miniCell { text-align:center; padding:2px 0; color:var(--ink-light); }
+
+.weekdayRow { display:grid; grid-template-columns: repeat(7, minmax(40px,1fr)); gap:6px; margin-bottom:6px; }
+.withWeekNumber .weekdayRow { grid-template-columns: 26px repeat(7, minmax(40px,1fr)); }
+.weekday { text-align:center; color:var(--ink-light); font-size:.78rem; font-weight:600; letter-spacing:.08em; }
+.weekNumHead, .weekNum { color:var(--ink-light); font-size:.7rem; text-align:center; }
+.grid { display:grid; grid-template-columns: repeat(7, minmax(40px,1fr)); gap:6px; }
+.withWeekNumber .grid { grid-template-columns: 26px repeat(7, minmax(40px,1fr)); }
+
+.dayButton {
+  position:relative; min-height:46px; border:none; background:transparent; border-radius:12px; cursor:pointer; color:var(--ink);
+  display:flex; align-items:center; justify-content:center; transition: background 150ms ease, transform 150ms ease; animation: inkDrop 300ms ease both;
+  animation-delay: calc(var(--day-index) * 15ms);
+}
+.dayButton:hover { background: rgba(0,0,0,.05); transform: scale(1.05); }
+.isOutside { color: var(--ink-light); font-style: italic; font-size:.92rem; }
+.isWeekend { color: var(--accent-warm); }
+.isInRange { background: var(--range-fill); border-radius: 0; }
+.isStart::before, .isEnd::before {
+  content:""; position:absolute; top:0; bottom:0; width:50%; background: var(--range-fill); z-index:0;
+}
+.isStart::before { right:0; }
+.isEnd::before { left:0; }
+.isStart.isSameDay::before, .isEnd.isSameDay::before { display:none; }
+.dateCircle {
+  position:relative; z-index:1; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.isStart .dateCircle, .isEnd .dateCircle { background: var(--accent); color:#fff; font-weight:600; transform:scale(1.04); }
+.isToday .dateCircle { outline:2px solid var(--today-ring); outline-offset:1px; }
+.holidayDot { width:4px; height:4px; border-radius:50%; position:absolute; bottom:6px; left:50%; transform:translateX(-50%); }
+.holidayNational { background:#d62828; }
+.holidayFestival { background:#ca8a04; }
+.hasHoliday:hover::after {
+  content: attr(data-holiday); position:absolute; bottom: 105%; left:50%; transform: translateX(-50%); white-space: nowrap;
+  background: #111; color:#fff; font-size:.68rem; padding:4px 8px; border-radius:6px; z-index:4;
+}
+
+.rangeStats {
+  margin-top:10px; padding:8px 10px; border-radius:10px; background: color-mix(in oklab, var(--paper), var(--accent) 9%);
+  font-size:.82rem; color:var(--ink-light); animation: slideUp 300ms ease;
+}
+.footerStrip { border-top:1px dashed rgba(0,0,0,.18); padding:9px 14px; font-size:.75rem; color:var(--ink-light); }
+
+.notesPanel { padding:14px; }
+.notesHeader { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:.86rem; color:var(--ink-light); }
+.notesTextarea { width:100%; min-height:110px; resize:vertical; border:1px solid rgba(0,0,0,.16); border-radius:10px; padding:10px; background: color-mix(in oklab, var(--paper), white 12%); color:var(--ink); }
+.notesActions { display:flex; justify-content:space-between; align-items:center; margin-top:8px; }
+.saveBtn, .copyBtn { border:none; padding:8px 11px; border-radius:8px; cursor:pointer; background:var(--accent); color:#fff; }
+.copyBtn { background: color-mix(in oklab, var(--paper), var(--ink) 16%); }
+.notesList { margin-top:10px; display:flex; flex-direction:column; gap:8px; }
+.noteItem {
+  border-left:4px solid var(--accent); background: color-mix(in oklab, var(--paper), white 10%); border-radius:8px; padding:8px; cursor:pointer; animation: slideIn 300ms ease;
+}
+.noteTop { display:flex; justify-content:space-between; font-size:.72rem; color:var(--ink-light); margin-bottom:4px; }
+.noteDelete { border:none; background:transparent; color:var(--ink-light); cursor:pointer; }
+.emptyState { font-size:.8rem; color:var(--ink-light); padding:10px 0 2px; }
+.notesToggle { display:none; width:100%; border:none; border-bottom:1px solid rgba(0,0,0,.12); padding:10px 14px; background:transparent; text-align:left; color:var(--ink); }
+
+.flipOut { animation: flipOut 250ms ease-in forwards; }
+.flipIn { animation: flipIn 250ms ease-out forwards; }
+.toast { position:fixed; right:22px; bottom:22px; background:#111; color:#fff; padding:10px 14px; border-radius:10px; animation: toastInOut 2s ease forwards; z-index:999; }
+
+@keyframes flipOut { 0% { transform: perspective(1200px) rotateY(0deg);} 100% { transform: perspective(1200px) rotateY(-90deg);} }
+@keyframes flipIn { 0% { transform: perspective(1200px) rotateY(90deg);} 100% { transform: perspective(1200px) rotateY(0deg);} }
+@keyframes inkDrop { from { opacity:0; transform:scale(.8);} to { opacity:1; transform:scale(1);} }
+@keyframes slideIn { from { opacity:0; transform: translateX(-10px);} to { opacity:1; transform: translateX(0);} }
+@keyframes slideUp { from { opacity:0; transform: translateY(8px);} to { opacity:1; transform: translateY(0);} }
+@keyframes toastInOut { 0% {opacity:0; transform:translateY(20px);} 12% {opacity:1; transform:translateY(0);} 75% {opacity:1;} 100% {opacity:0; transform:translateY(20px);} }
+
+@media (max-width: 767px) {
+  .heroWrap { height:200px; }
+  .calendarBody { grid-template-columns: 1fr; }
+  .notesCol { border-right:none; border-top:1px solid rgba(0,0,0,.08); }
+  .notesToggle { display:block; }
+  .notesPanelMobileHidden { display:none; }
+}
+@media (max-width: 479px) {
+  .wallCalendar { margin: 14px 10px 24px; }
+  .heroWrap { height:180px; }
+  .gridCol { padding:10px; }
+  .dayButton { min-height:40px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dayButton, .noteItem, .rangeStats, .heroImage, .heroImageNext, .wallCalendar { animation:none !important; transition:none !important; }
+}
